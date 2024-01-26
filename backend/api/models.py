@@ -6,23 +6,26 @@ class OpenAIMessageRole(models.Model):
     class Meta:
         verbose_name_plural = "OpenAI Message Roles"
 
-    name = models.CharField(max_length=255)
-
     def __str__(self):
         return self.name
+
+    name = models.CharField(max_length=255)
 
 class OpenAIModel(models.Model):
     class Meta:
         verbose_name_plural = "OpenAI Models"
 
-    name = models.CharField(max_length=255)
-
     def __str__(self):
         return self.name
+
+    name = models.CharField(max_length=255)
 
 class OpenAILogitBias(models.Model):
     class Meta:
         verbose_name_plural = "OpenAI Logit Biases"
+
+    def __str__(self):
+        return f"{self.token} ({self.bias})"
 
     token = models.CharField(max_length=255)
     bias = models.IntegerField(
@@ -30,9 +33,6 @@ class OpenAILogitBias(models.Model):
                 MaxValueValidator(100),
                 MinValueValidator(-100),
                 ])
-
-    def __str__(self):
-        return f"{self.token} ({self.bias})"
 
     def serialize(self):
         return {
@@ -43,6 +43,9 @@ class OpenAILogitBias(models.Model):
 class OpenAIMessage(models.Model):
     class Meta:
         verbose_name_plural = "OpenAI Messages"
+
+    def __str__(self):
+        return self.description
 
     description = models.CharField(
             default="",
@@ -57,9 +60,6 @@ class OpenAIMessage(models.Model):
             blank=True,
             )
 
-    def __str__(self):
-        return self.description
-
     def serialize(self):
         m_dict = {
                 "role": self.role.name,
@@ -69,7 +69,6 @@ class OpenAIMessage(models.Model):
             m_dict['name'] = self.name
 
         return m_dict
-        
 
 
 class OpenAIChat(models.Model):
