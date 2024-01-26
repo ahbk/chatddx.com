@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 
-# Create your views here.
+from .models import OpenAIChat
+
+def index(request):
+    payload = OpenAIChat.objects.get(identifier="mock_1").serialize()
+    return JsonResponse(payload)
+
