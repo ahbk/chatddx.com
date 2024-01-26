@@ -7,7 +7,7 @@
     Patientunderlag
     <textarea class="textarea textarea-bordered w-full"></textarea>
   </label>
-  <button class="btn btn-primary">Skapa beslutstöd</button>
+  <button class="btn btn-primary">Skapa beslutsstöd</button>
 </section>
 <section>
   <div role="tablist" class="tabs tabs-lifted">

@@ -3,6 +3,7 @@ Django 5.0.1
 """
 
 from pathlib import Path
+from os import getenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -10,7 +11,8 @@ SECRET_KEY = "django-insecure-@dl&bssqzr%xaviwu73kb!bng!(sgx#^u0+q7!$_&=kw+*4$#z
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = getenv('HOST', default='localhost').split(',')
+CSRF_TRUSTED_ORIGINS = getenv('ALLOWED_ORIGINS', default='http://localhost').split(',')
 
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
