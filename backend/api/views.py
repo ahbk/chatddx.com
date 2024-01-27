@@ -1,10 +1,10 @@
 from django.http import JsonResponse, HttpResponse
-from .models import OpenAIChat
+from .models import OpenAIChatCluster
 
 
-def index(request):
+def chat_cluster(request, cluster):
     if not request.user.is_authenticated:
         return HttpResponse('Unauthorized', status=401)
 
-    payload = OpenAIChat.objects.get(identifier="mock_1").serialize()
+    payload = OpenAIChatCluster.objects.get(identifier=cluster).serialize()
     return JsonResponse(payload)
