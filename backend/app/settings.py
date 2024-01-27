@@ -6,13 +6,22 @@ from pathlib import Path
 from os import getenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATE_DIR = Path(getenv("STATE_DIR", BASE_DIR))
 
-SECRET_KEY = "django-insecure-@dl&bssqzr%xaviwu73kb!bng!(sgx#^u0+q7!$_&=kw+*4$#z"
+SECRET_KEY_FILE = getenv("SECRET_KEY_FILE")
+if SECRET_KEY_FILE is None:
+    SECRET_KEY = "django-insecure-@dl&bssqzr%xaviwu73kb!bng!(sgx#^u0+q7!$_&=kw+*4$#z"
+else:
+    with open(SECRET_KEY_FILE) as f:
+        SECRET_KEY = f.read()
 
-DEBUG = True
+DEBUG = getenv("DEBUG", "True").lower() in ["true", "1", "yes"]
 
-ALLOWED_HOSTS = getenv('HOST', default='localhost').split(',')
-CSRF_TRUSTED_ORIGINS = getenv('ALLOWED_ORIGINS', default='http://localhost').split(',')
+SCHEME = getenv("SCHEME", "http")
+ALLOWED_HOSTS = getenv("HOST", "localhost").split(",")
+CSRF_TRUSTED_ORIGINS = [f"{SCHEME}://{host}" for host in ALLOWED_HOSTS]
+
+APP_ROOT = getenv("APP_ROOT", "")
 
 INSTALLED_APPS = [
     "api.apps.ApiConfig",
@@ -58,7 +67,7 @@ WSGI_APPLICATION = "app.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": STATE_DIR / "db.sqlite3",
     }
 }
 
@@ -85,6 +94,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = APP_ROOT + "static/"
+STATIC_ROOT = getenv("STATIC_ROOT")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

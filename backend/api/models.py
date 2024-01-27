@@ -183,6 +183,7 @@ class OpenAIChat(models.Model):
             "payload": payload,
         }
 
+
 class OpenAIChatCluster(models.Model):
     class Meta:
         verbose_name_plural = "OpenAI Chat Cluster"
@@ -192,25 +193,24 @@ class OpenAIChatCluster(models.Model):
 
     identifier = models.CharField(max_length=255)
     diagnoses = models.ForeignKey(
-            OpenAIChat,
-            on_delete=models.PROTECT,
-            related_name="diagnoses",
-            )
+        OpenAIChat,
+        on_delete=models.PROTECT,
+        related_name="diagnoses",
+    )
     examinations = models.ForeignKey(
-            OpenAIChat,
-            on_delete=models.PROTECT,
-            related_name="examinations",
-            )
+        OpenAIChat,
+        on_delete=models.PROTECT,
+        related_name="examinations",
+    )
     details = models.ForeignKey(
-            OpenAIChat,
-            on_delete=models.PROTECT,
-            related_name="details",
-            )
+        OpenAIChat,
+        on_delete=models.PROTECT,
+        related_name="details",
+    )
 
     def serialize(self):
         return {
-                "diagnoses": self.diagnoses.serialize(),
-                "examinations": self.examinations.serialize(),
-                "details": self.details.serialize(),
-                }
-
+            "diagnoses": self.diagnoses.serialize(),
+            "examinations": self.examinations.serialize(),
+            "details": self.details.serialize(),
+        }
