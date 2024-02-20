@@ -3,14 +3,16 @@
   import OpenAI from "openai";
 
   export let data: PageData;
+  let client = null;
 
-  let client = new OpenAI({
-    baseURL: data.oai.base_url,
-    apiKey: data.oai.api_key,
-    dangerouslyAllowBrowser: true,
-    fetch,
-  });
-
+  if (data.oai.api_key) {
+    client = new OpenAI({
+      baseURL: data.oai.base_url,
+      apiKey: data.oai.api_key,
+      dangerouslyAllowBrowser: true,
+      fetch,
+    });
+  }
 
   async function run() {
     const stream = await client.chat.completions.create({
@@ -30,6 +32,12 @@
 <h1 class="text-4xl">
   ChatDDx
   <small class="text-sm">Differentialdiagnostiskt beslutsstöd för läkare</small>
+  {client}
+  {#if data.oai}
+    Inloggad
+  {:else}
+    Inte inloggad
+  {/if}
 </h1>
 <section>
   <label>

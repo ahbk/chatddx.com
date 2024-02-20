@@ -24,20 +24,23 @@
     inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
     inherit (buildNodeModules.lib.${system}) fetchNodeModules hooks;
 
+    hostname = "chatddx.test";
+
     mkEnv = env: pkgs.writeText "env" (
       concatStringsSep "\n" (mapAttrsToList (k: v: "${k}=${v}") env)
       );
   in {
     packages.${system} = rec {
       default = pkgs.buildEnv {
-        name = "chatddx.com";
+        name = hostname;
         paths = [
           svelte.app
+          django.bin
         ];
       };
 
       svelte.app = pkgs.stdenv.mkDerivation {
-        pname = "chatddx.com-svelte";
+        pname = "${hostname}-svelte";
         version = "0.1.0";
         src = "${self}/client";
         env = mkEnv {
@@ -79,9 +82,10 @@
         };
 
         env = mkEnv {
-          DEBUG = "true";
-          STATE_DIR = "/var/lib/chatddx.com";
-          HOST = "localhost";
+          DEBUG = "false";
+          STATE_DIR = "/var/lib/${hostname}";
+          HOST = hostname;
+          SECRET_KEY_FILE = ./backend/secret_key;
           DJANGO_SETTINGS_MODULE = "app.settings";
         };
 
@@ -92,7 +96,7 @@
         };
 
         static = pkgs.stdenv.mkDerivation {
-          pname = "chatddx-static";
+          pname = "${hostname}-static";
           version = app.version;
           src = "${self}/backend";
           buildPhase = ''

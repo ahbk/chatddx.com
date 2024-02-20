@@ -9,12 +9,11 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    https: {
-      key: fs.readFileSync('./dev.chatddx.com-key.pem'),
-      cert: fs.readFileSync('./dev.chatddx.com.pem'),
-    },
+    //https: {
+    //  key: fs.readFileSync('./dev.chatddx.com-key.pem'),
+    //  cert: fs.readFileSync('./dev.chatddx.com.pem'),
+    //},
     proxy: {
-      '/api': 'http://localhost:8000',
       '/admin': 'http://localhost:8000',
       '/static': 'http://localhost:8000'
     }
