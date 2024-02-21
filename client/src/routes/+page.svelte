@@ -43,10 +43,10 @@
 
     if (data.oai.diagnoses.stream) {
       for await (const chunk of result) {
-        response.textContent = response.textContent + chunk.choices[0]?.delta?.content || "";
+        response.textContent = response.textContent + (chunk.choices[0]?.delta?.content || "");
       }
     } else {
-      response.textContent = result.choices[0].message.content || "";
+      response.textContent = (result.choices[0].message.content || "");
     }
     button.disabled = false;
     loading.classList.add("hidden");
@@ -57,20 +57,32 @@
 <section class="p-4">
 <h1 class="text-4xl">
   ChatDDx
-  <small class="text-sm">Differentialdiagnostiskt beslutsstöd för läkare</small>
 </h1>
+<small class="text-sm">Differentialdiagnostiskt beslutsstöd för läkare</small>
+
 </section>
+
 <section class="p-4">
-  <label>
-    Patientunderlag
-    <textarea id="user-prompt" class="textarea textarea-bordered w-full"></textarea>
+  <div class="divider divider-start">Patientunderlag</div>
+  <label class="form-control">
+    <div class="label">
+    </div>
+    <textarea
+        id="user-prompt"
+        rows="7"
+        class="textarea textarea-primary textarea-md w-full max-w-prose"
+        placeholder="Skriv patientens symtom, bakgrund och undersökningsfynd"
+        ></textarea>
   </label>
+
   <div class="flex py-2">
-  <button id="query-button" class="btn btn-primary mr-4" on:click={run}>Generera differentialdiagnoser</button>
-  <span id="query-loading" class="loading loading-ball loading-lg hidden"></span>
+    <button id="query-button" class="btn btn-primary mr-4" on:click={run}>Generera differentialdiagnoser</button>
+    <span id="query-loading" class="loading loading-ball loading-lg hidden"></span>
   </div>
 </section>
+
+
 <section class="p-4">
-  <h2 class="text-2xl my-2">Differentialdiagnoser:</h2>
-  <pre id="response" class="whitespace-pre-wrap break-words max-w-prose"></pre>
+  <div class="divider divider-start">Differentialdiagnoser</div>
+  <pre id="response" class="whitespace-pre-wrap break-words max-w-prose bg-base-200 rounded-lg min-h-64 p-2"></pre>
 </section>
