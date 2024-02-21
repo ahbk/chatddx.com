@@ -11,31 +11,24 @@
     fetch,
   });
 
-  async function run() {
-    let result;
-    let messages = data.oai.diagnoses.messages;
+  async function run({api_key, endpoint, identifier, ...payload}) {
     let content = document.getElementById('user-prompt').value.trim();
     let button = document.getElementById('query-button');
     let loading = document.getElementById('query-loading');
     let response = document.getElementById('response');
+
+    let result;
+    let messages = [...data.oai.diagnoses.messages, { content, role: "user" }];
+
     response.textContent = "";
 
     button.disabled = true;
     loading.classList.remove("hidden");
 
-    messages.push({
-      content,
-      role: "user",
-      }
-    );
     try {
-      result = await client.chat.completions.create({
-        messages,
-        model: data.oai.diagnoses.model,
-        stream: data.oai.diagnoses.stream,
-      });
+      result = await client.chat.completions.create({...payload, messages});
     } catch (error) {
-      console.error("Error fetching data from OpenAI:", error.message);
+      response.textContent = `Error fetching data from OpenAI: ${error.message}`;
       button.disabled = false;
       loading.classList.add("hidden");
       return;
@@ -76,7 +69,7 @@
   </label>
 
   <div class="flex py-2">
-    <button id="query-button" class="btn btn-primary mr-4" on:click={run}>Generera differentialdiagnoser</button>
+    <button id="query-button" class="btn btn-primary mr-4" on:click={()=>run(data.oai.diagnoses)}>Generera differentialdiagnoser</button>
     <span id="query-loading" class="loading loading-ball loading-lg hidden"></span>
   </div>
 </section>
