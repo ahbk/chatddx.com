@@ -3,7 +3,7 @@ import { redirect, error } from '@sveltejs/kit';
 import { PUBLIC_API_SSR } from '$env/static/public';
 
 export const load: LayoutServerLoad = async ({ fetch, cookies }) => {
-  const response = await fetch(`${PUBLIC_API_SSR}/api/chat/clusters/mock`, {
+  const response = await fetch(`${PUBLIC_API_SSR}/api/chat/clusters/default`, {
     headers: {
       'Cookie': `sessionid=${cookies.get('sessionid')}`,
     }
@@ -13,8 +13,10 @@ export const load: LayoutServerLoad = async ({ fetch, cookies }) => {
     oai = await response.json();
   } else if (response.status === 401) {
     redirect(307, '/admin/login/?next=/');
+  } else if (response.status === 404) {
+    error(response.status, await response.text());
   } else {
-    console.log(PUBLIC_API_SSR);
+    console.log(response);
     error(response.status, response.statusText);
   }
 

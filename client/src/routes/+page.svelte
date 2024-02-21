@@ -3,62 +3,74 @@
   import OpenAI from "openai";
 
   export let data: PageData;
-  let client = null;
 
-  if (data.oai.api_key) {
-    client = new OpenAI({
-      baseURL: data.oai.base_url,
-      apiKey: data.oai.api_key,
-      dangerouslyAllowBrowser: true,
-      fetch,
-    });
-  }
+  let client = new OpenAI({
+    baseURL: data.oai.diagnoses.endpoint,
+    apiKey: data.oai.diagnoses.api_key,
+    dangerouslyAllowBrowser: true,
+    fetch,
+  });
 
   async function run() {
-    const stream = await client.chat.completions.create({
-      model: 'gpt-4',
-      messages: [{ role: "user", content: "Say this is a test" }],
-      stream: true,
-    });
-    console.log(stream);
+    let result;
+    let messages = data.oai.diagnoses.messages;
+    let content = document.getElementById('user-prompt').value.trim();
+    let button = document.getElementById('query-button');
+    let loading = document.getElementById('query-loading');
+    let response = document.getElementById('response');
+    response.textContent = "";
 
-    for await (const chunk of stream) {
-      console.log(chunk);
+    button.disabled = true;
+    loading.classList.remove("hidden");
+
+    messages.push({
+      content,
+      role: "user",
+      }
+    );
+    try {
+      result = await client.chat.completions.create({
+        messages,
+        model: data.oai.diagnoses.model,
+        stream: data.oai.diagnoses.stream,
+      });
+    } catch (error) {
+      console.error("Error fetching data from OpenAI:", error.message);
+      button.disabled = false;
+      loading.classList.add("hidden");
+      return;
     }
+
+    if (data.oai.diagnoses.stream) {
+      for await (const chunk of result) {
+        response.textContent = response.textContent + chunk.choices[0]?.delta?.content || "";
+      }
+    } else {
+      response.textContent = result.choices[0].message.content || "";
+    }
+    button.disabled = false;
+    loading.classList.add("hidden");
   }
 
 </script>
 
+<section class="p-4">
 <h1 class="text-4xl">
   ChatDDx
   <small class="text-sm">Differentialdiagnostiskt beslutsstöd för läkare</small>
-  {client}
-  {#if data.oai}
-    Inloggad
-  {:else}
-    Inte inloggad
-  {/if}
 </h1>
-<section>
+</section>
+<section class="p-4">
   <label>
     Patientunderlag
-    <textarea class="textarea textarea-bordered w-full"></textarea>
+    <textarea id="user-prompt" class="textarea textarea-bordered w-full"></textarea>
   </label>
-  <button class="btn btn-primary" on:click={run}>Skapa beslutsstöd</button>
+  <div class="flex py-2">
+  <button id="query-button" class="btn btn-primary mr-4" on:click={run}>Generera differentialdiagnoser</button>
+  <span id="query-loading" class="loading loading-ball loading-lg hidden"></span>
+  </div>
 </section>
-<section>
-  <div role="tablist" class="tabs tabs-lifted">
-    <a role="tab" class="tab">
-      Diagnoser att utesluta
-    </a>
-    <a role="tab" class="tab tab-active">
-      Undersökningar att planera
-    </a>
-    <a role="tab" class="tab">
-      Komplettera patientunderlag
-    </a>
-  </div>
-  <div class="">
-
-  </div>
+<section class="p-4">
+  <h2 class="text-2xl my-2">Differentialdiagnoser:</h2>
+  <pre id="response" class="whitespace-pre-wrap break-words max-w-prose"></pre>
 </section>

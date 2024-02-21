@@ -24,7 +24,7 @@
     inherit (poetry2nix.lib.mkPoetry2Nix { inherit pkgs; }) mkPoetryApplication;
     inherit (buildNodeModules.lib.${system}) fetchNodeModules hooks;
 
-    hostname = "chatddx.test";
+    hostname = "chatddx.com";
 
     mkEnv = env: pkgs.writeText "env" (
       concatStringsSep "\n" (mapAttrsToList (k: v: "${k}=${v}") env)

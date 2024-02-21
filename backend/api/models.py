@@ -91,6 +91,7 @@ class OpenAIChat(models.Model):
     api_key = models.CharField(max_length=255)
     messages = models.ManyToManyField(OpenAIMessage)
     model = models.ForeignKey(OpenAIModel, on_delete=models.PROTECT)
+    stream = models.BooleanField(default=False)
 
     frequency_penalty = models.FloatField(
         default=None,
@@ -155,14 +156,19 @@ class OpenAIChat(models.Model):
     )
 
     def serialize(self):
-        payload = {
-            "messages": [m.serialize() for m in self.messages.all()],
+
+        result = {
+            "identifier": self.identifier,
+            "endpoint": self.endpoint,
+            "api_key": self.api_key,
             "model": self.model.name,
+            "stream": self.stream,
+            "messages": [m.serialize() for m in self.messages.all()],
         }
 
         logit_bias = self.logit_bias.all()
         if logit_bias:
-            payload["logit_bias"] = [lb.serialize() for lb in logit_bias]
+            result["logit_bias"] = [lb.serialize() for lb in logit_bias]
 
         for attr in [
             "frequency_penalty",
@@ -174,14 +180,10 @@ class OpenAIChat(models.Model):
         ]:
             val = getattr(self, attr)
             if val is not None:
-                payload[attr] = val
+                result[attr] = val
 
-        return {
-            "identifier": self.identifier,
-            "endpoint": self.endpoint,
-            "api_key": self.api_key,
-            "payload": payload,
-        }
+        return result
+
 
 
 class OpenAIChatCluster(models.Model):
