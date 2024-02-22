@@ -1,5 +1,5 @@
 {
-  description = "build chatddx";
+  description = "build chatddx.com";
 
   inputs = {
     nixpkgs.url = "github:ahbk/nixpkgs/nixos-unstable";
@@ -42,15 +42,14 @@
       svelte.app = pkgs.stdenv.mkDerivation {
         pname = "${hostname}-svelte";
         version = "0.1.0";
-        src = "${self}/client";
+        src = ./client;
         env = mkEnv {
           PUBLIC_API="http://localhost:8000";
           PUBLIC_API_SSR="http://localhost:8000";
-          ORIGIN="http://localhost:3000";
         };
 
         nodeModules = fetchNodeModules {
-          packageRoot = "${self}/client";
+          packageRoot = ./client;
         };
 
         nativeBuildInputs = [
@@ -74,7 +73,7 @@
 
       django = rec {
         bin = pkgs.substituteAll {
-          src = "${self}/backend/bin/chatddx.com";
+          src = ./backend/bin/manage;
           dir = "bin";
           isExecutable = true;
           app = app.dependencyEnv;
@@ -90,7 +89,7 @@
         };
 
         app = mkPoetryApplication {
-          projectDir = "${self}/backend";
+          projectDir = ./backend;
           groups = [];
           checkGroups = [];
         };
