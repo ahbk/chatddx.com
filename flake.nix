@@ -84,7 +84,7 @@
           DEBUG = "false";
           STATE_DIR = "/var/lib/${hostname}";
           HOST = hostname;
-          SECRET_KEY_FILE = ./backend/secret_key;
+          SECRET_KEY_FILE = ./backend/secret-key;
           DJANGO_SETTINGS_MODULE = "app.settings";
         };
 
